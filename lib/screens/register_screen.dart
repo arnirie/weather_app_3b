@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+import 'current_location_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,7 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isRegionsLoaded = false;
   bool isProvincesLoaded = false;
   TextEditingController _regionController = TextEditingController();
-  TextEditingController _provinceController = TextEditingController();
+  late TextEditingController _provinceController;
   TextEditingController _userNameController = TextEditingController();
 
   void callAPI() async {
@@ -47,6 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> loadProvinces(String regionCode) async {
+    _provinceController = TextEditingController();
     var url = Uri.https('psgc.gitlab.io', 'api/regions/$regionCode/provinces');
     var response = await http.get(url);
     List decodedResponse = jsonDecode(response.body);
@@ -64,12 +68,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> register() async {
     var url = Uri.parse('http://132.168.13.238/flutter_3b_php/register.php');
-    var response = await http.post(url, body: {
+    await http.post(url, body: {
       'username': _userNameController.text,
       'province': _provinceController.text,
+    }).then((response) {
+      // print(response.statusCode);
+      // print(response.body);
+      Map decodedResponse = jsonDecode(response.body);
+      print(decodedResponse['message']);
+      if (decodedResponse['status'] == 'ok') {
+        //navigate to another screen
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (_) => CurrentLocationScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(decodedResponse['message'])));
+      }
+    }).catchError((error) {
+      print(error.toString());
     });
-    print(response.statusCode);
-    print(response.body);
   }
 
   @override
@@ -94,6 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const Center(child: CircularProgressIndicator())
             else
               DropdownMenu(
+                width: MediaQuery.of(context).size.width - 16,
                 controller: _regionController,
                 label: const Text('Region'),
                 // enableFilter: true,
@@ -139,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             ElevatedButton(
               onPressed: register,
-              child: const Text('Call'),
+              child: const Text('Register'),
             ),
           ],
         ),
