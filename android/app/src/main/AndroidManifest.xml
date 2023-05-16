@@ -4,6 +4,8 @@
         android:label="weather_3b"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBwSrF_S5guRlLB3ek1N48ACmiqw0TNF5U"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

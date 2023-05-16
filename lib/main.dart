@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_3b/screens/current_location_screen.dart';
+import 'package:weather_3b/screens/maps_screen.dart';
 
 import 'screens/register_screen.dart';
 
@@ -14,7 +15,7 @@ class WeatherApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const CurrentLocationScreen(),
+      home: const MapsScreen(),
     );
   }
 }
